@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="ISO-8859-1">
+<title>Cadastro de alunos</title>
+
+<!-- Bootstrap CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+	crossorigin="anonymous">
+
+<style type="text/css">
+body {background: linear-gradient(65deg, #483D8B, #9370DB, #ADD8E6); background-size: 100%; margin-left: 10%; margin-right: 10%; margin-top: 2%; margin-bottom: 15%}
+h2{background: #6A5ACD; font-size: 32px; color: #F0FFFF; text-align:center}
+p{color: #000000; text-align:center}
+</style>
+</head>
+
+<body>
+
+	<h2>Cadastro de alunos</h2>
+	<p>Spring Boot Rest API - CRUD</p>
+	
+
+	<form action="" id="formCadastroUsuario">
+		<div class="mb-3">
+			<label for="id" class="form-label">ID</label> 
+			<input type="text" class="form-control" id="id" readonly="readonly">
+		</div>
+		<div class="mb-3">
+			<label for="nome" class="form-label">Nome</label> <input type="text" class="form-control" id="nome" placeholder="Qual nome?" required="required">
+		</div>
+		<div class="mb-3">
+			<label for="idade" class="form-label">Idade</label> 
+			<input type="number" class="form-control" id="idade" placeholder="Qual idade?" required="required">
+		</div>
+		<div class="mb-3">
+			<label for="curso" class="form-label">Curso</label>
+			<select class="form-select" name="curso">
+				<option value="">Selecione o curso</option>
+				<option value="Angular - básico ao intermediário">Angular - básico ao intermediário</option>
+				<option value="Banco de dados, programação back-end">Banco de dados, programação back-end</option>
+				<option value="Java Completo - básico ao avançado">Java Completo - básico ao avançado</option>
+				<option value="Lógica de programação">Lógica de programação</option>
+				<option value="PHP - básico">PHP - básico</option>
+				<option value="Programador Full Stack">Programador Full Stack</option>
+			</select>
+		</div>
+	</form>
+
+	<!-- buttons -->
+	<button type="submit" class="btn btn-dark btn-outline-light" onclick="salvarUsuario()">Salvar</button>
+	<button type="button" class="btn btn-dark btn-outline-light" onclick="document.getElementById('formCadastroUsuario').reset()">Novo</button>
+	
+	<!-- Button trigger modal -->
+	<button type="button" class="btn btn-dark btn-outline-light" data-bs-toggle="modal" data-bs-target="#pesquisarNomeModal">Pesquisar</button>	
+	
+	<button type="button" class="btn btn-dark btn-outline-light" onclick="deletarUsuario()">Deletar</button>
+
+	<!-- Modal Bootstrap busca por nome -->		
+	<div class="modal fade" tabindex="-1" id="pesquisarNomeModal" aria-labelledby="pesquisarModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="col-11 modal-title text-center" id="pesquisarModalLabel">Pesquisar usuário</h5>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="mb-3">								
+							<label for="buscaNome" class="col-form-label">Informe o nome:</label>
+							<input type="text" class="form-control" id="buscaNome">
+						</div>
+					</form>
+					<div style="height: 300px; overflow: scroll;">
+						<table class="table" id="tabelaResultados">
+							<thead>
+								<tr>
+									<th scope="col">ID</th>
+									<th scope="col">Nome</th>
+									<th scope="col">Idade</th>
+									<th scope="col">Curso</th>
+									<th scope="col">Editar</th>
+									<th scope="col">Deletar</th>
+								</tr>
+							</thead>
+							<tbody></tbody>					
+						</table>										
+					</div>					
+				</div>
+				<div class="modal-footer">					
+					<button type="button" class="btn btn-secondary" onclick="pesquisarUsuario()">Buscar</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fechar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+
+	<!-- jQuery CDN minified -->
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js"
+		integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+		crossorigin="anonymous"></script>
+
+	<!-- CDN via jsDelivr -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+
+	<script type="text/javascript">
+	/* function to save user data */
+	function salvarUsuario(){
+		
+		var id = $("#id").val();
+		var nome = $("#nome").val();
+		var idade = $("#idade").val();
+		var curso = formCadastroUsuario.curso.value;
+		
+		if(nome == null || nome != null && nome.trim() == ''){
+			$("#nome").focus();
+			alert("Nome não informado. Informe o nome.");
+			return;
+		}
+		
+		if(idade == null || idade != null && idade.trim()== ''){
+			$("#idade").focus();
+			alert("Idade não informada. Informe a idade.");
+			return;
+		}
+		
+		if(formCadastroUsuario.curso.selectedIndex==""){
+			alert("Curso não informado. Selecione um curso");
+		    formCadastroUsuario.curso.focus();
+		    return;
+		}	
+		
+		$.ajax({
+			method: "POST",
+			url: "salvar",
+			data: JSON.stringify({
+				id: id,
+				nome: nome,
+				idade: idade,
+				curso: curso
+			}),
+			contentType: "application/json; charset=utf-8",
+			success: function(response){
+				$("#id").val(response.id);
+				alert("Salvo com sucesso!")
+			}
+		}).fail(function(xhr, status, errorThrown){
+			alert("Erro ao salvar usuário: " + xhr.responseText);
+		});
+	}	
+	
+	function pesquisarUsuario() {
+
+		var nome = $('#buscaNome').val();
+
+		if (nome != null && nome.trim() != "") {
+
+			$.ajax({
+				method : "GET",
+				url : "buscarpornome",
+				data : "name=" + nome,
+				success : function(response) {						
+					$('#tabelaResultados > tbody > tr').remove();
+					
+					for (var i = 0; i < response.length; i++) {
+					$('#tabelaResultados > tbody').append('<tr id="'
+							+ response[i].id +'"><td>'
+							+ response[i].id + '</td><td>'
+							+ response[i].nome + '</td><td>'
+							+ response[i].idade + '</td><td>'
+							+ response[i].curso + '</td><td><button type="button" class="btn btn-primary" onclick="editarUsuarioModal('
+							+ response[i].id + ')">Ver</button></td><td><button type="button" class="btn btn-primary" onclick="deletarUsuarioModal('
+							+ response[i].id + ')">Deletar</button></td></tr>');}
+								}
+							}).fail(
+									function(xhr, status, errorThrown) {
+									alert("Erro ao buscar usuário: "+ xhr.responseText);
+							});
+		}
+
+	}
+	
+	function deletarUsuarioModal(id){
+		
+		if(confirm('Deseja deletar usuário?')){
+			
+			$.ajax({
+				method: "DELETE",
+				url: "deletar",
+				data: "iduser=" + id,
+				success: function(response){
+					$('#' + id).remove();
+					alert(response);
+				}			
+			}).fail(function(xhr, status, errorThrown){
+				alert("Erro ao deletar usuário por ID: " + xhr.responseText);
+			
+			});			
+		}
+		
+	}
+	
+	function editarUsuarioModal(id){
+		
+		$.ajax({
+			method: "GET",
+			url: "editar",
+			data: "iduser=" + id,
+			success: function(response){
+				
+				$("#id").val(response.id);
+				$("#nome").val(response.nome);
+				$("#idade").val(response.idade);
+				$(formCadastroUsuario.curso).val(response.curso);
+				
+				$("#pesquisarNomeModal").modal('hide');				
+				
+			}
+		}).fail(function(xhr, status, errorThrown){
+			alert("Não foi possível editar usuário. Erro: " + xhr.responseText);
+		});
+	}
+	
+	function deletarUsuario(){
+		
+		var id = $('#id').val();
+		
+		if(id != null && id.trim() != ""){
+			deletarUsuarioModal(id);
+			document.getElementById("formCadastroUsuario").reset();
+		}		
+	}
+	
+		
+	</script>
+
+
+</body>
+</html>
