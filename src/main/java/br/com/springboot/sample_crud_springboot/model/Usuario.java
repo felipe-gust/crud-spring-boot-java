@@ -46,5 +46,4 @@ public class Usuario implements Serializable {
 		this.curso = curso;
 	}	
 	
-	
 }
